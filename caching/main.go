@@ -38,12 +38,12 @@ func (m *Memory) Eval(key int) (interface{}, error) {
 	m.lock.RLock()
 	result, exists := m.cache[key]
 	m.lock.RUnlock()
+	m.lock.Lock()
 	if !exists {
 		result.result, result.err = m.f(key)
-		m.lock.Lock()
 		m.cache[key] = result
-		m.lock.Unlock()
 	}
+	m.lock.Unlock()
 	return result.result, result.err
 }
 
